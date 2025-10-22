@@ -17,10 +17,13 @@ import {
   Bell,
   Shield,
   X,
-  MessageSquare
+  MessageSquare,
+  Menu,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 
-const Sidebar = ({ isOpen, onClose }) => {
+const Sidebar = ({ isOpen, onClose, isCollapsed, onToggleCollapse }) => {
   const { user } = useAuth();
   const location = useLocation();
 
@@ -98,8 +101,9 @@ const Sidebar = ({ isOpen, onClose }) => {
       
       {/* Sidebar */}
       <div className={`
-        fixed lg:static inset-y-0 left-0 z-50 w-64 bg-white dark:bg-gray-800 shadow-lg border-r border-gray-200 dark:border-gray-700 min-h-screen transform transition-transform duration-300 ease-in-out
+        fixed lg:static inset-y-0 left-0 z-50 glass-sidebar min-h-screen transform transition-all duration-300 ease-in-out
         ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+        ${isCollapsed ? 'w-16' : 'w-64'}
       `}>
         <div className="p-6">
           <div className="flex items-center justify-between">
@@ -107,22 +111,33 @@ const Sidebar = ({ isOpen, onClose }) => {
               <div className="h-10 w-10 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center">
                 <GraduationCap className="h-6 w-6 text-primary-600 dark:text-primary-400" />
               </div>
-              <div>
-                <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-                  {user.role === 'student' && 'Student Portal'}
-                  {user.role === 'lecturer' && 'Lecturer Portal'}
-                  {user.role === 'admin' && 'Admin Portal'}
-                  {user.role === 'parent' && 'Parent Portal'}
-                </h2>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Welcome, {user.name}</p>
-              </div>
+              {!isCollapsed && (
+                <div>
+                  <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+                    {user.role === 'student' && 'Student Portal'}
+                    {user.role === 'lecturer' && 'Lecturer Portal'}
+                    {user.role === 'admin' && 'Admin Portal'}
+                    {user.role === 'parent' && 'Parent Portal'}
+                  </h2>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Welcome, {user.name}</p>
+                </div>
+              )}
             </div>
-            <button
-              onClick={onClose}
-              className="lg:hidden p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
-            >
-              <X className="h-5 w-5" />
-            </button>
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={onToggleCollapse}
+                className="hidden lg:block p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 rounded-lg hover:bg-white/10 dark:hover:bg-gray-700/50"
+                title={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+              >
+                {isCollapsed ? <ChevronRight className="h-5 w-5" /> : <ChevronLeft className="h-5 w-5" />}
+              </button>
+              <button
+                onClick={onClose}
+                className="lg:hidden p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
           </div>
         </div>
 
@@ -135,10 +150,11 @@ const Sidebar = ({ isOpen, onClose }) => {
                   key={item.path}
                   to={item.path}
                   onClick={onClose}
-                  className={`sidebar-link ${isActive(item.path) ? 'active' : ''}`}
+                  className={`${isCollapsed ? 'sidebar-link-collapsed' : 'sidebar-link'} ${isActive(item.path) ? 'active' : ''}`}
+                  title={isCollapsed ? item.label : ''}
                 >
-                  <Icon className="h-5 w-5 mr-3" />
-                  {item.label}
+                  <Icon className={`h-5 w-5 ${isCollapsed ? 'text-gray-800 dark:text-gray-200' : ''}`} />
+                  {!isCollapsed && <span className="ml-3">{item.label}</span>}
                 </Link>
               );
             })}

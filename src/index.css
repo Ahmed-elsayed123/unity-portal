@@ -8,7 +8,8 @@
   }
   
   body {
-    @apply bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300;
+    @apply bg-gradient-to-br from-pink-50 via-pink-100 to-rose-100 dark:from-gray-900 dark:via-pink-900 dark:to-gray-800 text-gray-900 dark:text-gray-100 transition-colors duration-300;
+    background-attachment: fixed;
   }
   
   /* Better dark theme colors */
@@ -27,7 +28,7 @@
   }
   
   .card {
-    @apply bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-600 transition-colors duration-300;
+    @apply bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-lg shadow-md border border-gray-200 dark:border-gray-600 transition-colors duration-300;
   }
   
   .input-field {
@@ -41,6 +42,14 @@
   .sidebar-link.active {
     @apply bg-primary-100 dark:bg-primary-900 text-primary-700 dark:text-primary-200 border-r-2 border-primary-600;
   }
+
+  .sidebar-link-collapsed {
+    @apply flex items-center justify-center px-2 py-2 text-gray-900 dark:text-gray-100 hover:bg-white/30 dark:hover:bg-gray-700/60 hover:text-primary-700 dark:hover:text-primary-300 transition-colors duration-200;
+  }
+  
+  .sidebar-link-collapsed.active {
+    @apply bg-primary-300 dark:bg-primary-700 text-primary-800 dark:text-primary-200 shadow-sm;
+  }
   
   .mobile-menu {
     @apply lg:hidden fixed inset-0 z-50 bg-black bg-opacity-50;
@@ -48,6 +57,58 @@
   
   .mobile-sidebar {
     @apply lg:hidden fixed inset-y-0 left-0 z-50 w-64 bg-white dark:bg-gray-800 shadow-lg transform transition-transform duration-300 ease-in-out;
+  }
+
+  /* Glass effect components */
+  .glass-card {
+    @apply bg-pink-50/20 dark:bg-pink-900/30 backdrop-blur-lg border border-pink-200/30 dark:border-pink-700/50 shadow-xl;
+  }
+
+  .glass-form {
+    @apply bg-pink-50/10 dark:bg-pink-900/20 backdrop-blur-md border border-pink-200/20 dark:border-pink-700/40 shadow-2xl;
+  }
+
+  .glass-sidebar {
+    @apply bg-pink-50/15 dark:bg-pink-900/25 backdrop-blur-lg shadow-xl;
+    border-right: none;
+  }
+
+  .glass-input {
+    @apply bg-pink-50/20 dark:bg-pink-900/30 backdrop-blur-sm border border-pink-200/30 dark:border-pink-600/50 text-gray-900 dark:text-gray-100 placeholder-gray-600 dark:placeholder-gray-400;
+  }
+
+  .glass-button {
+    @apply bg-pink-500/20 dark:bg-pink-600/30 backdrop-blur-sm border border-pink-300/30 dark:border-pink-500/50 hover:bg-pink-600/30 dark:hover:bg-pink-500/40 text-white font-medium;
+  }
+
+  /* Dark theme enhancements */
+  .dark .glass-card {
+    @apply shadow-2xl;
+  }
+
+  .dark .glass-form {
+    @apply shadow-2xl;
+  }
+
+  .dark .glass-sidebar {
+    @apply shadow-2xl;
+  }
+
+  /* Enhanced dark theme for better visibility */
+  .dark .sidebar-link {
+    @apply hover:bg-pink-900/20;
+  }
+
+  .dark .sidebar-link.active {
+    @apply bg-pink-900/30 text-pink-200;
+  }
+
+  .dark .sidebar-link-collapsed {
+    @apply hover:bg-pink-900/20;
+  }
+
+  .dark .sidebar-link-collapsed.active {
+    @apply bg-pink-800/40 text-pink-200;
   }
 }
 
@@ -60,4 +121,31 @@
     transform: translateX(0);
     opacity: 1;
   }
+}
+
+@keyframes blob {
+  0% {
+    transform: translate(0px, 0px) scale(1);
+  }
+  33% {
+    transform: translate(30px, -50px) scale(1.1);
+  }
+  66% {
+    transform: translate(-20px, 20px) scale(0.9);
+  }
+  100% {
+    transform: translate(0px, 0px) scale(1);
+  }
+}
+
+.animate-blob {
+  animation: blob 7s infinite;
+}
+
+.animation-delay-2000 {
+  animation-delay: 2s;
+}
+
+.animation-delay-4000 {
+  animation-delay: 4s;
 }
