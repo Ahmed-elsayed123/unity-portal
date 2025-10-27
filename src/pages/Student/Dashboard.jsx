@@ -1,0 +1,239 @@
+import React, { useState } from 'react';
+import { 
+  BookOpen, 
+  Award, 
+  Calendar, 
+  DollarSign, 
+  Bell,
+  AlertCircle,
+  Clock
+} from 'lucide-react';
+import DataManagement from '../../components/DataManagement.jsx';
+import { useNotification } from '../../contexts/NotificationContext.jsx';
+
+const StudentDashboard = () => {
+  const { showNotification } = useNotification();
+
+  const handleDataImport = (data, type) => {
+    console.log('Imported data:', data, 'Type:', type);
+    showNotification(`Successfully imported ${data.length} ${type} records`, 'success');
+  };
+
+  const handleDataExport = async (type) => {
+    try {
+      // Mock data for export
+      const mockData = {
+        grades: [
+          { 'Student ID': 'STU001', 'Course': 'Data Structures', 'Grade': 'A', 'Points': '95' },
+          { 'Student ID': 'STU001', 'Course': 'Calculus II', 'Grade': 'B+', 'Points': '87' }
+        ],
+        attendance: [
+          { 'Date': '2024-01-15', 'Course': 'Data Structures', 'Status': 'Present' },
+          { 'Date': '2024-01-16', 'Course': 'Calculus II', 'Status': 'Present' }
+        ],
+        schedule: [
+          { 'Time': '09:00 AM', 'Course': 'Data Structures', 'Room': 'CS-101' },
+          { 'Time': '11:00 AM', 'Course': 'Calculus II', 'Room': 'MATH-205' }
+        ]
+      };
+      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
+      showNotification(`Successfully exported ${type} data`, 'success');
+      return mockData[type] || [];
+    } catch (error) {
+      showNotification('Export failed', 'error');
+      return [];
+    }
+  };
+
+  const handleQuickAction = (action) => {
+    showNotification(`${action} clicked`, 'info');
+  };
+
+  const stats = [
+    { title: 'Enrolled Courses', value: '6', icon: BookOpen, color: 'text-blue-600', bgColor: 'bg-blue-100' },
+    { title: 'Current GPA', value: '3.75', icon: Award, color: 'text-green-600', bgColor: 'bg-green-100' },
+    { title: 'Upcoming Classes', value: '3', icon: Calendar, color: 'text-purple-600', bgColor: 'bg-purple-100' }
+  ];
+
+  const upcomingClasses = [
+    { time: '09:00 AM', subject: 'Data Structures', room: 'CS-101', instructor: 'Dr. Smith' },
+    { time: '11:00 AM', subject: 'Calculus II', room: 'MATH-205', instructor: 'Prof. Johnson' },
+    { time: '02:00 PM', subject: 'Physics Lab', room: 'PHY-301', instructor: 'Dr. Brown' }
+  ];
+
+  const recentAnnouncements = [
+    { title: 'Midterm Exam Schedule', content: 'Midterm exams will be held from March 15-20. Check your timetable for details.', time: '2 hours ago', priority: 'high' },
+    { title: 'Library Hours Extended', content: 'Library will be open until 11 PM during exam period.', time: '1 day ago', priority: 'medium' },
+    { title: 'Course Registration', content: 'Fall 2024 course registration opens on April 1st.', time: '3 days ago', priority: 'low' }
+  ];
+
+  const recentGrades = [
+    { course: 'Data Structures', assignment: 'Assignment 3', grade: 'A', points: '95/100' },
+    { course: 'Calculus II', assignment: 'Quiz 2', grade: 'B+', points: '87/100' },
+    { course: 'Physics', assignment: 'Lab Report 1', grade: 'A-', points: '92/100' }
+  ];
+
+  const getPriorityColor = (priority) => {
+    switch (priority) {
+      case 'high': return 'text-red-600 bg-red-100 dark:text-red-300 dark:bg-red-900/30 dark:border-red-700/50';
+      case 'medium': return 'text-yellow-600 bg-yellow-100 dark:text-yellow-300 dark:bg-yellow-900/30 dark:border-yellow-700/50';
+      case 'low': return 'text-green-600 bg-green-100 dark:text-green-300 dark:bg-green-900/30 dark:border-green-700/50';
+      default: return 'text-gray-600 bg-gray-100 dark:text-gray-300 dark:bg-gray-800/50';
+    }
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-slate-50">Student Dashboard</h1>
+        <p className="text-gray-600 dark:text-slate-300 mt-2">Welcome back! Here's what's happening with your academics.</p>
+      </div>
+
+      {/* Stats Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {stats.map((stat, index) => {
+          const Icon = stat.icon;
+          return (
+            <div key={index} className="card p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600 dark:text-slate-300">{stat.title}</p>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-slate-50 mt-1">{stat.value}</p>
+                </div>
+                <div className={`p-3 rounded-full ${stat.bgColor}`}>
+                  <Icon className={`h-6 w-6 ${stat.color}`} />
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Upcoming Classes */}
+        <div className="card p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-slate-50">Today's Classes</h2>
+            <Calendar className="h-5 w-5 text-gray-400 dark:text-slate-400" />
+          </div>
+          <div className="space-y-3">
+            {upcomingClasses.map((classItem, index) => (
+              <div key={index} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-slate-700/50 rounded-lg border border-gray-200 dark:border-slate-600">
+                <div className="flex items-center space-x-3">
+                  <Clock className="h-4 w-4 text-gray-400 dark:text-slate-400" />
+                  <div>
+                    <p className="font-medium text-gray-900 dark:text-slate-100">{classItem.subject}</p>
+                    <p className="text-sm text-gray-600 dark:text-slate-300">{classItem.instructor} • {classItem.room}</p>
+                  </div>
+                </div>
+                <span className="text-sm font-medium text-gray-900 dark:text-slate-200">{classItem.time}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Recent Announcements */}
+        <div className="card p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-slate-50">Recent Announcements</h2>
+            <Bell className="h-5 w-5 text-gray-400 dark:text-slate-400" />
+          </div>
+          <div className="space-y-3">
+            {recentAnnouncements.map((announcement, index) => (
+              <div key={index} className="border-l-4 border-primary-200 dark:border-primary-600 pl-4">
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <h3 className="font-medium text-gray-900 dark:text-slate-100">{announcement.title}</h3>
+                    <p className="text-sm text-gray-600 dark:text-slate-300 mt-1">{announcement.content}</p>
+                  </div>
+                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${getPriorityColor(announcement.priority)}`}>
+                    {announcement.priority}
+                  </span>
+                </div>
+                <p className="text-xs text-gray-500 dark:text-slate-400 mt-2">{announcement.time}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Recent Grades */}
+        <div className="card p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-slate-50">Recent Grades</h2>
+            <Award className="h-5 w-5 text-gray-400 dark:text-slate-400" />
+          </div>
+          <div className="space-y-3">
+            {recentGrades.map((grade, index) => (
+              <div key={index} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-slate-700/50 rounded-lg border border-gray-200 dark:border-slate-600">
+                <div>
+                  <p className="font-medium text-gray-900 dark:text-slate-100">{grade.course}</p>
+                  <p className="text-sm text-gray-600 dark:text-slate-300">{grade.assignment}</p>
+                </div>
+                <div className="text-right">
+                  <p className="font-semibold text-gray-900 dark:text-slate-100">{grade.grade}</p>
+                  <p className="text-sm text-gray-600 dark:text-slate-300">{grade.points}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Quick Actions */}
+        <div className="card p-6">
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-slate-50 mb-4">Quick Actions</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <button 
+              onClick={() => handleQuickAction('View Courses')}
+              className="p-4 bg-primary-50 dark:action-courses rounded-lg hover:bg-primary-100 dark:hover:bg-blue-800/60 transition-all duration-200 text-left w-full border border-transparent dark:border-blue-600/60 shadow-lg hover:shadow-xl"
+            >
+              <BookOpen className="h-6 w-6 text-primary-600 dark:text-blue-100 mb-2" />
+              <p className="font-medium text-gray-900 dark:text-blue-100">View Courses</p>
+              <p className="text-sm text-gray-600 dark:text-blue-200">Check your enrolled courses</p>
+            </button>
+            <button 
+              onClick={() => handleQuickAction('View Grades')}
+              className="p-4 bg-green-50 dark:action-grades rounded-lg hover:bg-green-100 dark:hover:bg-green-800/60 transition-all duration-200 text-left w-full border border-transparent dark:border-green-600/60 shadow-lg hover:shadow-xl"
+            >
+              <Award className="h-6 w-6 text-green-600 dark:text-green-100 mb-2" />
+              <p className="font-medium text-gray-900 dark:text-green-100">View Grades</p>
+              <p className="text-sm text-gray-600 dark:text-green-200">Check your academic progress</p>
+            </button>
+            <button 
+              onClick={() => handleQuickAction('View Timetable')}
+              className="p-4 bg-yellow-50 dark:action-timetable rounded-lg hover:bg-yellow-100 dark:hover:bg-yellow-800/60 transition-all duration-200 text-left w-full border border-transparent dark:border-yellow-600/60 shadow-lg hover:shadow-xl"
+            >
+              <Calendar className="h-6 w-6 text-yellow-600 dark:text-yellow-100 mb-2" />
+              <p className="font-medium text-gray-900 dark:text-yellow-100">Timetable</p>
+              <p className="text-sm text-gray-600 dark:text-yellow-200">View your schedule</p>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Alerts */}
+      <div className="card p-6 bg-yellow-50 border-yellow-200">
+        <div className="flex items-start space-x-3">
+          <AlertCircle className="h-5 w-5 text-yellow-600 mt-0.5" />
+          <div>
+            <h3 className="font-medium text-yellow-800">Important Notice</h3>
+            <p className="text-yellow-700 mt-1">
+              Your semester fees are due on March 31st. Please make payment to avoid late fees.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Data Management */}
+      <DataManagement 
+        userRole="student"
+        onDataImport={handleDataImport}
+        onDataExport={handleDataExport}
+      />
+    </div>
+  );
+};
+
+export default StudentDashboard;
