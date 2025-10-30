@@ -17,7 +17,9 @@ import {
   Clock,
   AlertCircle,
   Download,
-  Upload
+  Upload,
+  X,
+  Save
 } from 'lucide-react';
 import BackButton from '../../components/BackButton.jsx';
 
@@ -25,6 +27,20 @@ const AdminCommunication = () => {
   const [activeTab, setActiveTab] = useState('announcements');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedAudience, setSelectedAudience] = useState('all');
+  const [showViewModal, setShowViewModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [editingItem, setEditingItem] = useState(null);
+  const [itemForm, setItemForm] = useState({
+    title: '',
+    content: '',
+    audience: '',
+    priority: 'Medium',
+    type: 'Email',
+    recipient: '',
+    subject: ''
+  });
 
   const announcements = [
     {
@@ -132,6 +148,72 @@ const AdminCommunication = () => {
     }
   };
 
+  const handleViewItem = (item) => {
+    setSelectedItem(item);
+    setShowViewModal(true);
+  };
+
+  const handleEditItem = (item) => {
+    setEditingItem(item);
+    setItemForm({
+      title: item.title || item.subject || '',
+      content: item.content || '',
+      audience: item.audience || item.recipient || '',
+      priority: item.priority || 'Medium',
+      type: item.type || 'Email',
+      recipient: item.recipient || '',
+      subject: item.subject || ''
+    });
+    setShowEditModal(true);
+  };
+
+  const handleAddItem = () => {
+    setEditingItem(null);
+    setItemForm({
+      title: '',
+      content: '',
+      audience: '',
+      priority: 'Medium',
+      type: 'Email',
+      recipient: '',
+      subject: ''
+    });
+    setShowAddModal(true);
+  };
+
+  const handleSaveItem = (e) => {
+    e.preventDefault();
+    
+    // In a real app, this would save to the database
+    console.log('Saving item:', editingItem ? 'edit' : 'add', itemForm);
+    
+    // Simulate success
+    const action = editingItem ? 'updated' : 'created';
+    const itemType = activeTab === 'announcements' ? 'Announcement' : 'Message';
+    alert(`${itemType} ${action} successfully!`);
+    
+    setShowEditModal(false);
+    setShowAddModal(false);
+    setEditingItem(null);
+    setItemForm({
+      title: '',
+      content: '',
+      audience: '',
+      priority: 'Medium',
+      type: 'Email',
+      recipient: '',
+      subject: ''
+    });
+  };
+
+  const handleDeleteItem = (item) => {
+    if (window.confirm(`Are you sure you want to delete this ${activeTab.slice(0, -1)}?`)) {
+      // In a real app, this would delete from the database
+      console.log('Deleting item:', item.id);
+      alert(`${activeTab.slice(0, -1)} deleted successfully!`);
+    }
+  };
+
   const renderAnnouncements = () => (
     <div className="space-y-4">
       {announcements.map((announcement) => (
@@ -163,13 +245,26 @@ const AdminCommunication = () => {
               )}
             </div>
             <div className="flex space-x-2">
-              <button className="btn-primary text-sm">
+              <button 
+                onClick={() => handleViewItem(announcement)}
+                className="btn-primary text-sm"
+              >
                 <Eye className="h-4 w-4 mr-1" />
                 View
               </button>
-              <button className="btn-secondary text-sm">
+              <button 
+                onClick={() => handleEditItem(announcement)}
+                className="btn-secondary text-sm"
+              >
                 <Edit className="h-4 w-4 mr-1" />
                 Edit
+              </button>
+              <button 
+                onClick={() => handleDeleteItem(announcement)}
+                className="btn-danger text-sm"
+              >
+                <Trash2 className="h-4 w-4 mr-1" />
+                Delete
               </button>
             </div>
           </div>
@@ -202,13 +297,26 @@ const AdminCommunication = () => {
               <span>Sent: {message.sentAt}</span>
             </div>
             <div className="flex space-x-2">
-              <button className="btn-primary text-sm">
+              <button 
+                onClick={() => handleViewItem(message)}
+                className="btn-primary text-sm"
+              >
                 <Eye className="h-4 w-4 mr-1" />
                 View
               </button>
-              <button className="btn-secondary text-sm">
+              <button 
+                onClick={() => handleEditItem(message)}
+                className="btn-secondary text-sm"
+              >
                 <Edit className="h-4 w-4 mr-1" />
                 Edit
+              </button>
+              <button 
+                onClick={() => handleDeleteItem(message)}
+                className="btn-danger text-sm"
+              >
+                <Trash2 className="h-4 w-4 mr-1" />
+                Delete
               </button>
             </div>
           </div>
@@ -233,7 +341,10 @@ const AdminCommunication = () => {
             <Upload className="h-4 w-4 mr-2" />
             Import Contacts
           </button>
-          <button className="btn-primary">
+          <button 
+            onClick={handleAddItem}
+            className="btn-primary"
+          >
             <Plus className="h-4 w-4 mr-2" />
             Create Message
           </button>
@@ -354,12 +465,24 @@ const AdminCommunication = () => {
       <div className="card p-6">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <button className="p-4 bg-primary-50 rounded-lg hover:bg-primary-100 transition-colors text-left">
+          <button 
+            onClick={() => {
+              setActiveTab('announcements');
+              handleAddItem();
+            }}
+            className="p-4 bg-primary-50 rounded-lg hover:bg-primary-100 transition-colors text-left"
+          >
             <Plus className="h-6 w-6 text-primary-600 mb-2" />
             <h4 className="font-medium text-gray-900">Create Announcement</h4>
             <p className="text-sm text-gray-600">Post new announcement</p>
           </button>
-          <button className="p-4 bg-green-50 rounded-lg hover:bg-green-100 transition-colors text-left">
+          <button 
+            onClick={() => {
+              setActiveTab('messages');
+              handleAddItem();
+            }}
+            className="p-4 bg-green-50 rounded-lg hover:bg-green-100 transition-colors text-left"
+          >
             <Mail className="h-6 w-6 text-green-600 mb-2" />
             <h4 className="font-medium text-gray-900">Send Message</h4>
             <p className="text-sm text-gray-600">Send email or SMS</p>
@@ -376,6 +499,232 @@ const AdminCommunication = () => {
           </button>
         </div>
       </div>
+
+      {/* View Modal */}
+      {showViewModal && selectedItem && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                {selectedItem.title || selectedItem.subject} Details
+              </h3>
+              <button
+                onClick={() => setShowViewModal(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <X className="h-6 w-6" />
+              </button>
+            </div>
+            
+            <div className="space-y-4">
+              <div className="flex items-center space-x-3 mb-4">
+                <span className={`px-2 py-1 rounded-full text-xs font-medium ${getPriorityColor(selectedItem.priority)}`}>
+                  {selectedItem.priority}
+                </span>
+                <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(selectedItem.status)}`}>
+                  {getStatusIcon(selectedItem.status)}
+                  <span className="ml-1">{selectedItem.status}</span>
+                </span>
+              </div>
+              
+              <div>
+                <h4 className="font-medium text-gray-900 dark:text-white mb-2">Content</h4>
+                <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded border">
+                  <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
+                    {selectedItem.content}
+                  </p>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <h4 className="font-medium text-gray-900 dark:text-white mb-1">Audience/Recipient</h4>
+                  <p className="text-gray-600 dark:text-gray-300">{selectedItem.audience || selectedItem.recipient}</p>
+                </div>
+                <div>
+                  <h4 className="font-medium text-gray-900 dark:text-white mb-1">Type</h4>
+                  <p className="text-gray-600 dark:text-gray-300">{selectedItem.type || 'Announcement'}</p>
+                </div>
+                <div>
+                  <h4 className="font-medium text-gray-900 dark:text-white mb-1">Created By</h4>
+                  <p className="text-gray-600 dark:text-gray-300">{selectedItem.createdBy || selectedItem.sentBy}</p>
+                </div>
+                <div>
+                  <h4 className="font-medium text-gray-900 dark:text-white mb-1">Date</h4>
+                  <p className="text-gray-600 dark:text-gray-300">{selectedItem.createdAt || selectedItem.sentAt}</p>
+                </div>
+                {selectedItem.views && (
+                  <div>
+                    <h4 className="font-medium text-gray-900 dark:text-white mb-1">Views</h4>
+                    <p className="text-gray-600 dark:text-gray-300">{selectedItem.views}</p>
+                  </div>
+                )}
+                {selectedItem.recipients && (
+                  <div>
+                    <h4 className="font-medium text-gray-900 dark:text-white mb-1">Recipients</h4>
+                    <p className="text-gray-600 dark:text-gray-300">{selectedItem.recipients.toLocaleString()}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+            
+            <div className="flex space-x-3 pt-4 mt-6 border-t border-gray-200 dark:border-gray-600">
+              <button
+                onClick={() => {
+                  setShowViewModal(false);
+                  handleEditItem(selectedItem);
+                }}
+                className="flex-1 btn-primary"
+              >
+                <Edit className="h-4 w-4 mr-2" />
+                Edit
+              </button>
+              <button
+                onClick={() => setShowViewModal(false)}
+                className="flex-1 btn-secondary"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit/Add Modal */}
+      {(showEditModal || showAddModal) && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                {editingItem ? 'Edit Item' : 'Create New Item'}
+              </h3>
+              <button
+                onClick={() => {
+                  setShowEditModal(false);
+                  setShowAddModal(false);
+                }}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <X className="h-6 w-6" />
+              </button>
+            </div>
+            
+            <form onSubmit={handleSaveItem} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  {activeTab === 'announcements' ? 'Title' : 'Subject'} <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={itemForm.title}
+                  onChange={(e) => setItemForm(prev => ({ ...prev, title: e.target.value }))}
+                  className="input-field w-full"
+                  placeholder={`Enter ${activeTab === 'announcements' ? 'title' : 'subject'}...`}
+                  required
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Content <span className="text-red-500">*</span>
+                </label>
+                <textarea
+                  value={itemForm.content}
+                  onChange={(e) => setItemForm(prev => ({ ...prev, content: e.target.value }))}
+                  className="input-field w-full h-24 resize-none"
+                  placeholder="Enter content..."
+                  required
+                />
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Priority
+                  </label>
+                  <select
+                    value={itemForm.priority}
+                    onChange={(e) => setItemForm(prev => ({ ...prev, priority: e.target.value }))}
+                    className="input-field w-full"
+                  >
+                    <option value="Low">Low</option>
+                    <option value="Medium">Medium</option>
+                    <option value="High">High</option>
+                  </select>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Audience
+                  </label>
+                  <select
+                    value={itemForm.audience}
+                    onChange={(e) => setItemForm(prev => ({ ...prev, audience: e.target.value }))}
+                    className="input-field w-full"
+                  >
+                    <option value="All Students">All Students</option>
+                    <option value="Faculty">Faculty</option>
+                    <option value="Staff">Staff</option>
+                    <option value="All">All</option>
+                  </select>
+                </div>
+              </div>
+              
+              {activeTab === 'messages' && (
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Type
+                    </label>
+                    <select
+                      value={itemForm.type}
+                      onChange={(e) => setItemForm(prev => ({ ...prev, type: e.target.value }))}
+                      className="input-field w-full"
+                    >
+                      <option value="Email">Email</option>
+                      <option value="SMS">SMS</option>
+                      <option value="Push">Push Notification</option>
+                    </select>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Recipient
+                    </label>
+                    <input
+                      type="text"
+                      value={itemForm.recipient}
+                      onChange={(e) => setItemForm(prev => ({ ...prev, recipient: e.target.value }))}
+                      className="input-field w-full"
+                      placeholder="Enter recipient..."
+                    />
+                  </div>
+                </div>
+              )}
+              
+              <div className="flex space-x-3 pt-4">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowEditModal(false);
+                    setShowAddModal(false);
+                  }}
+                  className="flex-1 btn-secondary"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 btn-primary"
+                >
+                  <Save className="h-4 w-4 mr-2" />
+                  {editingItem ? 'Update' : 'Create'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

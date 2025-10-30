@@ -22,7 +22,8 @@ import {
   ChevronLeft,
   ChevronRight,
   LogOut,
-  Megaphone
+  Megaphone,
+  Package
 } from 'lucide-react';
 
 const Sidebar = ({ isOpen, onClose, isCollapsed, onToggleCollapse }) => {
@@ -48,6 +49,8 @@ const Sidebar = ({ isOpen, onClose, isCollapsed, onToggleCollapse }) => {
     { path: '/student/timetable', label: 'Timetable', icon: Calendar },
     { path: '/student/attendance', label: 'Attendance', icon: Users },
     { path: '/student/exams', label: 'Exams & Tests', icon: ClipboardList },
+    { path: '/student/lost-items', label: 'Lost & Found', icon: Package },
+    { path: '/student/queue', label: 'Smart Queue', icon: ClipboardList },
     { path: '/student/announcements', label: 'Announcements', icon: Megaphone },
     { path: '/student/notifications', label: 'Notifications', icon: Bell },
     { path: '/student/profile', label: 'Profile', icon: User }
@@ -71,6 +74,7 @@ const Sidebar = ({ isOpen, onClose, isCollapsed, onToggleCollapse }) => {
     { path: '/admin/academics', label: 'Academic Management', icon: GraduationCap },
     { path: '/admin/examinations', label: 'Examinations', icon: ClipboardList },
     { path: '/admin/finance', label: 'Finance & Fees', icon: DollarSign },
+    { path: '/admin/lost-items', label: 'Lost Items', icon: Package },
     { path: '/admin/announcements', label: 'Announcements', icon: Megaphone },
     { path: '/admin/reports', label: 'Reports', icon: BarChart3 },
     { path: '/admin/communication', label: 'Communication', icon: Bell },

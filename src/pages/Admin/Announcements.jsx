@@ -31,7 +31,9 @@ const AdminAnnouncements = () => {
   const [selectedPriority, setSelectedPriority] = useState('all');
   const [selectedAudience, setSelectedAudience] = useState('all');
   const [showModal, setShowModal] = useState(false);
+  const [showViewModal, setShowViewModal] = useState(false);
   const [editingAnnouncement, setEditingAnnouncement] = useState(null);
+  const [viewingAnnouncement, setViewingAnnouncement] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const { showNotification } = useNotification();
 
@@ -230,6 +232,12 @@ const AdminAnnouncements = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  // Handle view
+  const handleView = (announcement) => {
+    setViewingAnnouncement(announcement);
+    setShowViewModal(true);
   };
 
   // Handle edit
@@ -471,6 +479,14 @@ const AdminAnnouncements = () => {
               
               <div className="flex items-center space-x-2 ml-4">
                 <button
+                  onClick={() => handleView(announcement)}
+                  className="p-2 text-gray-500 dark:text-slate-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
+                  title="View Details"
+                >
+                  <Eye className="h-4 w-4" />
+                </button>
+                
+                <button
                   onClick={() => handleEdit(announcement)}
                   className="p-2 text-gray-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                   title="Edit"
@@ -500,6 +516,136 @@ const AdminAnnouncements = () => {
           </div>
         ))}
       </div>
+
+      {/* View Modal */}
+      {showViewModal && viewingAnnouncement && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                {viewingAnnouncement.title}
+              </h3>
+              <button
+                onClick={() => setShowViewModal(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <X className="h-6 w-6" />
+              </button>
+            </div>
+            
+            <div className="space-y-4">
+              <div className="flex items-center space-x-3 mb-4">
+                <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(viewingAnnouncement.status)}`}>
+                  {getStatusLabel(viewingAnnouncement.status)}
+                </span>
+                <span className={`px-2 py-1 rounded-full text-xs font-medium ${getPriorityColor(viewingAnnouncement.priority)}`}>
+                  {getPriorityLabel(viewingAnnouncement.priority)}
+                </span>
+                <span className="text-sm text-gray-500 dark:text-gray-400">
+                  {getAudienceLabel(viewingAnnouncement.audience)}
+                </span>
+              </div>
+              
+              <div>
+                <h4 className="font-medium text-gray-900 dark:text-white mb-2">Content</h4>
+                <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded border">
+                  <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
+                    {viewingAnnouncement.content}
+                  </p>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <h4 className="font-medium text-gray-900 dark:text-white mb-1">Author</h4>
+                  <p className="text-gray-600 dark:text-gray-300">{viewingAnnouncement.author}</p>
+                </div>
+                <div>
+                  <h4 className="font-medium text-gray-900 dark:text-white mb-1">Created</h4>
+                  <p className="text-gray-600 dark:text-gray-300">
+                    {new Date(viewingAnnouncement.createdAt).toLocaleString()}
+                  </p>
+                </div>
+                {viewingAnnouncement.publishedAt && (
+                  <div>
+                    <h4 className="font-medium text-gray-900 dark:text-white mb-1">Published</h4>
+                    <p className="text-gray-600 dark:text-gray-300">
+                      {new Date(viewingAnnouncement.publishedAt).toLocaleString()}
+                    </p>
+                  </div>
+                )}
+                {viewingAnnouncement.expiresAt && (
+                  <div>
+                    <h4 className="font-medium text-gray-900 dark:text-white mb-1">Expires</h4>
+                    <p className="text-gray-600 dark:text-gray-300">
+                      {new Date(viewingAnnouncement.expiresAt).toLocaleString()}
+                    </p>
+                  </div>
+                )}
+                <div>
+                  <h4 className="font-medium text-gray-900 dark:text-white mb-1">Views</h4>
+                  <p className="text-gray-600 dark:text-gray-300">{viewingAnnouncement.readCount}</p>
+                </div>
+                <div>
+                  <h4 className="font-medium text-gray-900 dark:text-white mb-1">Attachments</h4>
+                  <p className="text-gray-600 dark:text-gray-300">
+                    {viewingAnnouncement.attachments.length} file(s)
+                  </p>
+                </div>
+              </div>
+              
+              {viewingAnnouncement.targetGroups && viewingAnnouncement.targetGroups.length > 0 && (
+                <div>
+                  <h4 className="font-medium text-gray-900 dark:text-white mb-2">Target Groups</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {viewingAnnouncement.targetGroups.map((group, index) => (
+                      <span key={index} className="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded text-sm text-gray-700 dark:text-gray-300">
+                        {group}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+              
+              {viewingAnnouncement.attachments && viewingAnnouncement.attachments.length > 0 && (
+                <div>
+                  <h4 className="font-medium text-gray-900 dark:text-white mb-2">Attachments</h4>
+                  <div className="space-y-2">
+                    {viewingAnnouncement.attachments.map((attachment, index) => (
+                      <div key={index} className="flex items-center space-x-2 p-2 bg-gray-50 dark:bg-gray-700 rounded">
+                        <FileText className="h-4 w-4 text-gray-500" />
+                        <span className="text-sm text-gray-700 dark:text-gray-300">{attachment}</span>
+                        <button className="text-primary-600 hover:text-primary-800 text-sm">
+                          Download
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+            
+            <div className="flex space-x-3 pt-4 mt-6 border-t border-gray-200 dark:border-gray-600">
+              <button
+                onClick={() => {
+                  setShowViewModal(false);
+                  handleEdit(viewingAnnouncement);
+                }}
+                className="flex-1 btn-primary"
+              >
+                <Edit className="h-4 w-4 mr-2" />
+                Edit
+              </button>
+              <button
+                onClick={() => setShowViewModal(false)}
+                className="flex-1 btn-secondary"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Create/Edit Modal */}
       {showModal && (

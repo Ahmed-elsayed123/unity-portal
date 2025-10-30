@@ -30,6 +30,11 @@ import StudentExams from './pages/Student/Exams.jsx';
 import StudentProfile from './pages/Student/Profile.jsx';
 import StudentNotifications from './pages/Student/Notifications.jsx';
 import StudentAnnouncements from './pages/Student/Announcements.jsx';
+import StudentLostItems from './pages/Student/LostItems.jsx';
+import QueueLanding from './pages/Student/SmartQueue/Landing.jsx';
+import QueueJoinStatus from './pages/Student/SmartQueue/JoinStatus.jsx';
+import QueueCreate from './pages/Student/SmartQueue/CreateQueue.jsx';
+import QueueManage from './pages/Student/SmartQueue/ManageQueue.jsx';
 
 // Lecturer Pages
 import LecturerDashboard from './pages/Lecturer/Dashboard.jsx';
@@ -52,6 +57,7 @@ import AdminReports from './pages/Admin/Reports.jsx';
 import AdminCommunication from './pages/Admin/Communication.jsx';
 import AdminSettings from './pages/Admin/Settings.jsx';
 import AdminAnnouncements from './pages/Admin/Announcements.jsx';
+import AdminLostItems from './pages/Admin/LostItems.jsx';
 
 // Protected Route Component
 const ProtectedRoute = ({ children, allowedRoles }) => {
@@ -233,6 +239,41 @@ const AppContent = () => {
                 </ProtectedLayout>
               </ProtectedRoute>
             } />
+            <Route path="/student/lost-items" element={
+              <ProtectedRoute allowedRoles={['student']}>
+                <ProtectedLayout>
+                  <StudentLostItems />
+                </ProtectedLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/student/queue" element={
+              <ProtectedRoute allowedRoles={['student']}>
+                <ProtectedLayout>
+                  <QueueLanding />
+                </ProtectedLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/student/queue/status" element={
+              <ProtectedRoute allowedRoles={['student']}>
+                <ProtectedLayout>
+                  <QueueJoinStatus />
+                </ProtectedLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/student/queue/create" element={
+              <ProtectedRoute allowedRoles={['student','admin']}>
+                <ProtectedLayout>
+                  <QueueCreate />
+                </ProtectedLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/student/queue/manage" element={
+              <ProtectedRoute allowedRoles={['student','admin']}>
+                <ProtectedLayout>
+                  <QueueManage />
+                </ProtectedLayout>
+              </ProtectedRoute>
+            } />
 
             {/* Lecturer Routes */}
             <Route path="/lecturer/dashboard" element={
@@ -360,6 +401,13 @@ const AppContent = () => {
               <ProtectedRoute allowedRoles={['admin']}>
                 <ProtectedLayout>
                   <AdminAnnouncements />
+                </ProtectedLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/lost-items" element={
+              <ProtectedRoute allowedRoles={['admin']}>
+                <ProtectedLayout>
+                  <AdminLostItems />
                 </ProtectedLayout>
               </ProtectedRoute>
             } />

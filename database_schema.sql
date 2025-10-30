@@ -458,6 +458,37 @@ CREATE TABLE file_uploads (
 );
 
 -- =============================================
+-- LOST ITEMS MANAGEMENT TABLES
+-- =============================================
+
+-- Lost items
+CREATE TABLE lost_items (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    item_name VARCHAR(255) NOT NULL,
+    description TEXT,
+    category ENUM('electronics', 'clothing', 'books', 'accessories', 'documents', 'other') NOT NULL,
+    location VARCHAR(255) NOT NULL,
+    date_lost DATE NOT NULL,
+    contact_info VARCHAR(255),
+    image_path VARCHAR(500),
+    status ENUM('lost', 'found', 'claimed') DEFAULT 'lost',
+    reported_by INT NOT NULL,
+    claimed_by INT NULL,
+    claimer_name VARCHAR(255),
+    claimer_contact VARCHAR(255),
+    claim_date TIMESTAMP NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (reported_by) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (claimed_by) REFERENCES users(id) ON DELETE SET NULL,
+    INDEX idx_status (status),
+    INDEX idx_category (category),
+    INDEX idx_location (location),
+    INDEX idx_reported_by (reported_by),
+    INDEX idx_created_at (created_at)
+);
+
+-- =============================================
 -- INITIAL DATA INSERTION
 -- =============================================
 
